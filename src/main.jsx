@@ -3,13 +3,16 @@ import { createRoot } from 'react-dom/client'
 import 'leaflet/dist/leaflet.css'
 import './styles.css'
 import App from './App.jsx'
+import WelcomePage from './pages/WelcomePage.jsx'
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 const normalizedPath = window.location.pathname.slice(basePath.length).replace(/\/+$/, '') || '/'
 const AdminPage = lazy(() => import('./pages/AdminPage.jsx'))
 const rootPage = normalizedPath === '/admin'
   ? <Suspense fallback={<main className="admin-status-page"><p>Cargando administración...</p></main>}><AdminPage /></Suspense>
-  : <App />
+  : normalizedPath === '/mapa'
+    ? <App />
+    : <WelcomePage />
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
