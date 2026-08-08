@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Filters from './components/Filters.jsx'
 import Header from './components/Header.jsx'
 import LocationButton from './components/LocationButton.jsx'
 import MapView from './components/MapView.jsx'
 import PuntoList from './components/PuntoList.jsx'
 import SearchBar from './components/SearchBar.jsx'
-import puntos from './data/puntos.json'
+import { getPoints } from './lib/points.js'
 import { calculateDistance } from './utils/distance.js'
 
 const normalize = (text) =>
@@ -16,6 +16,9 @@ const normalize = (text) =>
     .trim()
 
 export default function App() {
+  const [points, setPoints] = useState([])
+  const [pointsLoading, setPointsLoading] = useState(true)
+  const [pointsError, setPointsError] = useState('')
   const [query, setQuery] = useState('')
   const [region, setRegion] = useState('Todos')
   const [sort, setSort] = useState('nombre')
@@ -24,16 +27,35 @@ export default function App() {
   const [locationLoading, setLocationLoading] = useState(false)
   const [locationStatus, setLocationStatus] = useState({ message: '', type: '' })
 
+  useEffect(() => {
+    let active = true
+
+    getPoints()
+      .then((data) => {
+        if (active) setPoints(data)
+      })
+      .catch(() => {
+        if (active) setPointsError('No pudimos cargar los puntos. Intenta nuevamente más tarde.')
+      })
+      .finally(() => {
+        if (active) setPointsLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   const pointsWithDistance = useMemo(
     () =>
-      puntos.map((point) => ({
+      points.map((point) => ({
         ...point,
         distance:
           userLocation && point.tipo === 'fijo'
             ? calculateDistance(userLocation.latitude, userLocation.longitude, point.lat, point.lng)
             : null,
       })),
-    [userLocation],
+    [points, userLocation],
   )
 
   const nearestId = useMemo(() => {
@@ -127,6 +149,8 @@ export default function App() {
           </div>
           <PuntoList
             points={visiblePoints}
+            loading={pointsLoading}
+            error={pointsError}
             selectedId={selectedId}
             nearestId={nearestId}
             onSelect={selectPoint}
