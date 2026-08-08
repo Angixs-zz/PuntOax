@@ -2,7 +2,7 @@
 
 Aplicación web de una sola página para consultar puntos de detección en el estado de Oaxaca. Permite explorar los centros en un mapa de OpenStreetMap, buscar por texto y región, consultar sus datos y calcular cuál punto fijo se encuentra más cerca del usuario.
 
-No utiliza backend ni base de datos. Los 19 registros y sus coordenadas están almacenados localmente en `src/data/puntos.json`.
+Los puntos se almacenan en Supabase/PostgreSQL y se consultan mediante su Data API. La vista pública es de libre acceso y las modificaciones están protegidas con Supabase Auth y políticas RLS basadas en una lista privada de administradores.
 
 ## Tecnologías
 
@@ -11,6 +11,7 @@ No utiliza backend ni base de datos. Los 19 registros y sus coordenadas están a
 - Leaflet y React Leaflet
 - OpenStreetMap
 - CSS propio
+- Supabase y PostgreSQL
 
 ## Instalación
 
@@ -22,6 +23,17 @@ npm run dev
 ```
 
 Vite mostrará la URL local, normalmente `http://localhost:5173`.
+
+### Configuración de Supabase
+
+La integración utiliza únicamente `@supabase/supabase-js`. Configura en `.env.local` la URL y la clave pública del proyecto:
+
+```dotenv
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_tu_clave_publica
+```
+
+No utilices una clave secreta, `service_role` ni la contraseña de PostgreSQL. Después de modificar `.env.local`, reinicia `npm run dev` y abre la consola del navegador. El mensaje `[Supabase] Conexión con la Data API verificada.` confirma que la URL y la clave pública funcionan.
 
 Para generar y revisar la versión de producción:
 
@@ -42,12 +54,16 @@ npm run preview
 - Identificación automática del punto fijo más cercano.
 - Diseño adaptable para teléfonos, tabletas y escritorio.
 - Tratamiento diferenciado de Caravanas DIF como servicio móvil.
+- Administración privada en `/admin` para crear, editar y eliminar registros.
+- Seguridad de escritura mediante `private.admin_users`, `public.is_admin()` y RLS.
 
 ## Estructura
 
 ```text
 src/
   components/
+    admin/
+      PointForm.jsx
     Filters.jsx
     Header.jsx
     LocationButton.jsx
@@ -56,7 +72,12 @@ src/
     PuntoList.jsx
     SearchBar.jsx
   data/
-    puntos.json
+    puntos.json (respaldo histórico)
+  lib/
+    points.js
+    supabase.js
+  pages/
+    AdminPage.jsx
   utils/
     distance.js
   App.jsx
@@ -64,13 +85,35 @@ src/
   styles.css
 scripts/
   geocode.mjs
+supabase/
+  migrations/
+    002_seed_puntos.sql
 ```
 
-`App.jsx` mantiene el estado compartido de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. Los componentes de lista presentan la misma colección filtrada y `distance.js` contiene la fórmula de Haversine y el formato de distancias.
+`App.jsx` obtiene los registros públicos desde Supabase y mantiene el estado de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. `AdminPage.jsx` gestiona la sesión, comprueba `is_admin()` y ejecuta las operaciones CRUD, que también están protegidas en la base de datos mediante RLS.
 
 ## Datos y coordenadas
 
-Los datos se cargan directamente desde `src/data/puntos.json`; la aplicación no realiza geocodificación al abrirse. Cada registro incluye región, tipo de servicio y la propiedad `coordenadaAproximada`.
+Los datos activos se cargan desde `public.puntos` en Supabase; la aplicación no realiza geocodificación al abrirse. `src/data/puntos.json` se conserva como respaldo e importación inicial. Cuando la tabla está vacía, `/admin` muestra un botón para insertar los 19 registros usando la sesión administradora y RLS. Como alternativa, la migración idempotente `supabase/migrations/002_seed_puntos.sql` permite insertarlos desde SQL Editor.
+
+### Coordenadas desde administración
+
+El formulario administrativo ofrece tres métodos:
+
+- Extraer coordenadas de un enlace completo de Google Maps.
+- Resolver un enlace corto mediante la Edge Function protegida `resolve-map-link`.
+- Buscar la dirección con Nominatim y ajustar el resultado haciendo clic en OpenStreetMap.
+
+La búsqueda por dirección se marca automáticamente como aproximada hasta que el administrador confirme el marcador. La Edge Function valida la sesión y ejecuta `is_admin()` antes de seguir cualquier redirección; no utiliza `service_role`.
+
+Para desplegarla con Supabase CLI:
+
+```bash
+npx supabase login
+npx supabase functions deploy resolve-map-link --project-ref fxvcltsuimrwhkgzhknr
+```
+
+El inicio de sesión abre el flujo seguro de Supabase. No guardes tokens de acceso en el repositorio. Una vez desplegada, el botón **Obtener del enlace** funciona también con URLs del tipo `https://maps.app.goo.gl/...`.
 
 Las coordenadas iniciales se consultaron con Nominatim/OpenStreetMap mediante solicitudes secuenciales con pausas. Posteriormente se verificaron manualmente direcciones y pines compartidos de Google Maps. Cuando no existe una ubicación suficientemente precisa, se conserva una coincidencia verificable de calle o del centro de la localidad y se marca `coordenadaAproximada: true`. La interfaz avisa al usuario para que confirme la dirección antes de acudir.
 
@@ -99,7 +142,17 @@ Caravanas DIF no recibe una distancia porque su coordenada corresponde únicamen
 5. Usa `dist` como directorio de salida.
 6. Publica el proyecto.
 
-No se requieren variables de entorno. La configuración `base: './'` de Vite también permite publicar los archivos estáticos en Netlify o GitHub Pages bajo una subruta.
+Configura en Vercel las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` antes de desplegar. `vercel.json` redirige `/admin` a la aplicación de una sola página. Para Netlify se incluye la regla equivalente en `public/_redirects`.
+
+## Despliegue en GitHub Pages
+
+El workflow `.github/workflows/deploy-pages.yml` compila y publica la aplicación automáticamente con cada push a `main`. Antes del primer despliegue:
+
+1. En GitHub abre **Settings > Secrets and variables > Actions** y crea los secretos `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` con los mismos valores públicos de `.env.local`.
+2. Abre **Settings > Pages** y selecciona **GitHub Actions** como fuente de publicación.
+3. Sube los cambios a la rama `main` o ejecuta manualmente **Deploy to GitHub Pages** desde la pestaña **Actions**.
+
+El workflow configura la subruta del repositorio y genera el fallback necesario para que tanto la portada como `/admin` carguen correctamente en GitHub Pages.
 
 ## Fuente cartográfica
 
