@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
 import Filters from './components/Filters.jsx'
 import Header from './components/Header.jsx'
+import LocationButton from './components/LocationButton.jsx'
+import MapView from './components/MapView.jsx'
 import PuntoList from './components/PuntoList.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import puntos from './data/puntos.json'
+import { calculateDistance } from './utils/distance.js'
 
 const normalize = (text) =>
   text
@@ -15,20 +18,87 @@ const normalize = (text) =>
 export default function App() {
   const [query, setQuery] = useState('')
   const [region, setRegion] = useState('Todos')
+  const [sort, setSort] = useState('nombre')
   const [selectedId, setSelectedId] = useState(null)
+  const [userLocation, setUserLocation] = useState(null)
+  const [locationLoading, setLocationLoading] = useState(false)
+  const [locationStatus, setLocationStatus] = useState({ message: '', type: '' })
+
+  const pointsWithDistance = useMemo(
+    () =>
+      puntos.map((point) => ({
+        ...point,
+        distance:
+          userLocation && point.tipo === 'fijo'
+            ? calculateDistance(userLocation.latitude, userLocation.longitude, point.lat, point.lng)
+            : null,
+      })),
+    [userLocation],
+  )
+
+  const nearestId = useMemo(() => {
+    if (!userLocation) return null
+    return pointsWithDistance.reduce((nearest, point) => {
+      if (point.distance == null) return nearest
+      return !nearest || point.distance < nearest.distance ? point : nearest
+    }, null)?.id
+  }, [pointsWithDistance, userLocation])
 
   const visiblePoints = useMemo(() => {
     const normalizedQuery = normalize(query)
+    const filtered = pointsWithDistance.filter((point) => {
+      const searchableText = normalize(`${point.nombre} ${point.institucion} ${point.municipio} ${point.direccion}`)
+      const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery)
+      const matchesRegion = region === 'Todos' || point.region === region
+      return matchesSearch && matchesRegion
+    })
 
-    return puntos
-      .filter((point) => {
-        const searchableText = normalize(`${point.nombre} ${point.institucion} ${point.municipio} ${point.direccion}`)
-        const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery)
-        const matchesRegion = region === 'Todos' || point.region === region
-        return matchesSearch && matchesRegion
+    return filtered.sort((a, b) => {
+      if (sort === 'distancia') return (a.distance ?? Infinity) - (b.distance ?? Infinity)
+      return a.nombre.localeCompare(b.nombre, 'es')
+    })
+  }, [pointsWithDistance, query, region, sort])
+
+  function requestLocation() {
+    if (!navigator.geolocation) {
+      setLocationStatus({
+        message: 'Tu navegador no permite obtener la ubicación. Puedes consultar los puntos manualmente.',
+        type: 'error',
       })
-      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
-  }, [query, region])
+      return
+    }
+
+    setLocationLoading(true)
+    setLocationStatus({ message: '', type: '' })
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setUserLocation({ latitude: coords.latitude, longitude: coords.longitude })
+        setSort('distancia')
+        setLocationLoading(false)
+        setLocationStatus({ message: 'Ubicación obtenida. Los puntos están ordenados por distancia.', type: 'success' })
+      },
+      (error) => {
+        const messages = {
+          1: 'No se concedió permiso para acceder a tu ubicación.',
+          2: 'No fue posible determinar tu ubicación actual.',
+          3: 'La solicitud de ubicación tardó demasiado.',
+        }
+        setLocationLoading(false)
+        setLocationStatus({
+          message: `${messages[error.code] || 'Ocurrió un error al obtener tu ubicación.'} Puedes seguir consultando los puntos manualmente.`,
+          type: 'error',
+        })
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+    )
+  }
+
+  function selectPoint(id) {
+    setSelectedId(id)
+    if (window.innerWidth < 860) {
+      document.querySelector('.map-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   return (
     <div className="app-shell">
@@ -40,9 +110,15 @@ export default function App() {
             <Filters
               region={region}
               onRegionChange={setRegion}
-              sort="nombre"
-              onSortChange={() => {}}
-              hasLocation={false}
+              sort={sort}
+              onSortChange={setSort}
+              hasLocation={Boolean(userLocation)}
+            />
+            <LocationButton
+              onClick={requestLocation}
+              loading={locationLoading}
+              message={locationStatus.message}
+              messageType={locationStatus.type}
             />
             <div className="results-heading">
               <h2>Puntos disponibles</h2>
@@ -52,16 +128,17 @@ export default function App() {
           <PuntoList
             points={visiblePoints}
             selectedId={selectedId}
-            nearestId={null}
-            onSelect={setSelectedId}
+            nearestId={nearestId}
+            onSelect={selectPoint}
           />
         </aside>
-        <section className="map-section" aria-label="Mapa en preparación">
-          <div className="map-placeholder">
-            <strong>Mapa de puntos</strong>
-            <p>La vista geográfica estará disponible en la siguiente etapa.</p>
-          </div>
-        </section>
+        <MapView
+          points={visiblePoints}
+          selectedId={selectedId}
+          nearestId={nearestId}
+          userLocation={userLocation}
+          onSelect={setSelectedId}
+        />
       </main>
     </div>
   )
