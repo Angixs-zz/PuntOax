@@ -45,9 +45,11 @@ npm run preview
 ## Funcionalidades
 
 - Portada informativa con una introducción al proyecto y acceso directo al directorio.
+- Análisis geoespacial en `/investigacion` con hallazgos, metodología y fuentes consultadas.
 - Mapa interactivo con los 19 puntos disponibles.
 - Buscador sin distinción entre mayúsculas, minúsculas o acentos.
-- Filtros por región y orden alfabético o por distancia.
+- Filtros por región, sector, condiciones de acceso y orden alfabético o por distancia.
+- Metadatos operativos verificados para servicios públicos y comunitarios seleccionados.
 - Selección sincronizada entre las tarjetas y los marcadores.
 - Popups con dirección, institución, horario y distancia.
 - Enlaces externos a Google Maps para solicitar indicaciones.
@@ -73,12 +75,15 @@ src/
     PuntoList.jsx
     SearchBar.jsx
   data/
+    pointMetadata.js (metadatos operativos con fuente)
     puntos.json (respaldo histórico)
+    research.js (hallazgos y referencias)
   lib/
     points.js
     supabase.js
   pages/
     AdminPage.jsx
+    ResearchPage.jsx
     WelcomePage.jsx
   utils/
     distance.js
@@ -90,13 +95,18 @@ scripts/
 supabase/
   migrations/
     002_seed_puntos.sql
+    003_refresh_verified_point_details.sql
 ```
 
-`WelcomePage.jsx` presenta el proyecto en la ruta `/`. `App.jsx` muestra el directorio en `/mapa`, obtiene los registros públicos desde Supabase y mantiene el estado de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. `AdminPage.jsx` gestiona la sesión en `/admin`, comprueba `is_admin()` y ejecuta las operaciones CRUD, que también están protegidas en la base de datos mediante RLS.
+`WelcomePage.jsx` presenta el proyecto en la ruta `/`. `ResearchPage.jsx` resume el análisis territorial y sus fuentes en `/investigacion`. `App.jsx` muestra el directorio en `/mapa`, obtiene los registros públicos desde Supabase y mantiene el estado de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. `AdminPage.jsx` gestiona la sesión en `/admin`, comprueba `is_admin()` y ejecuta las operaciones CRUD, que también están protegidas en la base de datos mediante RLS.
 
 ## Datos y coordenadas
 
 Los datos activos se cargan desde `public.puntos` en Supabase; la aplicación no realiza geocodificación al abrirse. `src/data/puntos.json` se conserva como respaldo e importación inicial. Cuando la tabla está vacía, `/admin` muestra un botón para insertar los 19 registros usando la sesión administradora y RLS. Como alternativa, la migración idempotente `supabase/migrations/002_seed_puntos.sql` permite insertarlos desde SQL Editor.
+
+`src/data/pointMetadata.js` complementa determinados registros con sector, gratuidad, pruebas, requisitos y contactos cuando existe una fuente institucional directa. Esta capa editorial no sustituye la confirmación con el establecimiento. Horarios, costos y requisitos pueden cambiar; los datos sin respaldo suficiente permanecen sin clasificar en lugar de inferirse.
+
+La investigación de `/investigacion` distingue los datos del directorio de las interpretaciones cualitativas. No constituye un censo de infraestructura, una recomendación clínica ni evidencia de que una región sin marcadores carezca de servicios.
 
 ### Coordenadas desde administración
 
@@ -154,7 +164,7 @@ El workflow `.github/workflows/deploy-pages.yml` compila y publica la aplicació
 2. Abre **Settings > Pages** y selecciona **GitHub Actions** como fuente de publicación.
 3. Sube los cambios a la rama `main` o ejecuta manualmente **Deploy to GitHub Pages** desde la pestaña **Actions**.
 
-El workflow configura la subruta del repositorio y genera el fallback necesario para que la portada, `/mapa` y `/admin` carguen correctamente en GitHub Pages.
+El workflow configura la subruta del repositorio y genera el fallback necesario para que la portada, `/mapa`, `/investigacion` y `/admin` carguen correctamente en GitHub Pages.
 
 ## Fuente cartográfica
 
