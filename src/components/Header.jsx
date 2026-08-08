@@ -18,6 +18,7 @@ export default function Header() {
       </a>
       <nav className="header-navigation" aria-label="Navegación principal">
         <a href={baseUrl}>Inicio</a>
+        <a href={`${baseUrl}investigacion`}>Investigación</a>
         <a href={`${baseUrl}admin`}>Administración</a>
       </nav>
     </header>

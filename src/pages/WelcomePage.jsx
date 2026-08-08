@@ -34,7 +34,10 @@ export default function WelcomePage() {
             <small>Red estatal de atención</small>
           </span>
         </a>
-        <a className="welcome-nav-link" href={`${baseUrl}mapa`}>Abrir directorio</a>
+        <nav className="welcome-public-links" aria-label="Navegación principal">
+          <a href={`${baseUrl}investigacion`}>Investigación</a>
+          <a className="welcome-nav-link" href={`${baseUrl}mapa`}>Abrir directorio</a>
+        </nav>
       </header>
 
       <main>
@@ -52,6 +55,7 @@ export default function WelcomePage() {
                 <span aria-hidden="true">→</span>
               </a>
               <a className="welcome-text-action" href="#conoce-el-proyecto">Conocer el proyecto</a>
+              <a className="welcome-text-action" href={`${baseUrl}investigacion`}>Leer análisis territorial</a>
             </div>
             <dl className="welcome-summary" aria-label="Resumen del proyecto">
               <div><dt>19</dt><dd>puntos registrados</dd></div>

@@ -8,8 +8,11 @@ import WelcomePage from './pages/WelcomePage.jsx'
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 const normalizedPath = window.location.pathname.slice(basePath.length).replace(/\/+$/, '') || '/'
 const AdminPage = lazy(() => import('./pages/AdminPage.jsx'))
+const ResearchPage = lazy(() => import('./pages/ResearchPage.jsx'))
 const rootPage = normalizedPath === '/admin'
   ? <Suspense fallback={<main className="admin-status-page"><p>Cargando administración...</p></main>}><AdminPage /></Suspense>
+  : normalizedPath === '/investigacion'
+    ? <Suspense fallback={<main className="admin-status-page"><p>Cargando investigación...</p></main>}><ResearchPage /></Suspense>
   : normalizedPath === '/mapa'
     ? <App />
     : <WelcomePage />
