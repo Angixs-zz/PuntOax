@@ -1,0 +1,31 @@
+:root {
+  font-family: Arial, sans-serif;
+  color: #34282c;
+  background: #f4f1f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.welcome-page {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.welcome-page h1 {
+  margin: 8px 0;
+  color: #701f32;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.welcome-page p {
+  margin: 4px;
+}
