@@ -1,6 +1,9 @@
 import { supabase } from './supabase.js'
+import { pointMetadataById } from '../data/pointMetadata.js'
 
 export function toAppPoint(point) {
+  const metadata = pointMetadataById[point.id] || {}
+
   return {
     id: point.id,
     nombre: point.nombre,
@@ -15,6 +18,7 @@ export function toAppPoint(point) {
     tipo: point.tipo,
     coordenadaAproximada: point.coordenada_aproximada,
     enlaceReferencia: point.enlace_referencia || '',
+    ...metadata,
   }
 }
 

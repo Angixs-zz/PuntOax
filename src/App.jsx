@@ -21,6 +21,8 @@ export default function App() {
   const [pointsError, setPointsError] = useState('')
   const [query, setQuery] = useState('')
   const [region, setRegion] = useState('Todos')
+  const [sector, setSector] = useState('Todos')
+  const [access, setAccess] = useState('Todos')
   const [sort, setSort] = useState('nombre')
   const [selectedId, setSelectedId] = useState(null)
   const [userLocation, setUserLocation] = useState(null)
@@ -69,17 +71,22 @@ export default function App() {
   const visiblePoints = useMemo(() => {
     const normalizedQuery = normalize(query)
     const filtered = pointsWithDistance.filter((point) => {
-      const searchableText = normalize(`${point.nombre} ${point.institucion} ${point.municipio} ${point.direccion}`)
+      const searchableText = normalize(`${point.nombre} ${point.institucion} ${point.municipio} ${point.direccion} ${(point.pruebas || []).join(' ')}`)
       const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery)
       const matchesRegion = region === 'Todos' || point.region === region
-      return matchesSearch && matchesRegion
+      const matchesSector = sector === 'Todos'
+        || (sector === 'sin_clasificar' ? !point.sector : point.sector === sector)
+      const matchesAccess = access === 'Todos'
+        || (access === 'gratuito' && point.costo === 'gratuito')
+        || (access === 'con_requisitos' && Boolean(point.requisitos))
+      return matchesSearch && matchesRegion && matchesSector && matchesAccess
     })
 
     return filtered.sort((a, b) => {
       if (sort === 'distancia') return (a.distance ?? Infinity) - (b.distance ?? Infinity)
       return a.nombre.localeCompare(b.nombre, 'es')
     })
-  }, [pointsWithDistance, query, region, sort])
+  }, [access, pointsWithDistance, query, region, sector, sort])
 
   function requestLocation() {
     if (!navigator.geolocation) {
@@ -132,6 +139,10 @@ export default function App() {
             <Filters
               region={region}
               onRegionChange={setRegion}
+              sector={sector}
+              onSectorChange={setSector}
+              access={access}
+              onAccessChange={setAccess}
               sort={sort}
               onSortChange={setSort}
               hasLocation={Boolean(userLocation)}

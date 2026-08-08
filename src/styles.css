@@ -457,6 +457,21 @@ select {
   background: #e9f3f8;
 }
 
+.sector-badge.is-publico {
+  color: #315d79;
+  background: #e8f2f8;
+}
+
+.sector-badge.is-comunitario {
+  color: #3e694d;
+  background: #e9f4ec;
+}
+
+.free-badge {
+  color: #4e6031;
+  background: #f0f5df;
+}
+
 .distance {
   flex: 0 0 auto;
   padding: 5px 8px;
@@ -495,6 +510,82 @@ select {
 .point-details .restriction dd {
   color: #852c3b;
   font-weight: 650;
+}
+
+.point-access-details {
+  margin-top: 12px;
+  padding: 10px 11px;
+  background: #f8f6f6;
+  border: 1px solid #e8e1e3;
+  border-radius: 9px;
+}
+
+.point-access-details summary {
+  color: var(--wine);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.point-access-details > dl {
+  display: grid;
+  gap: 7px;
+  margin: 11px 0 0;
+}
+
+.point-access-details > dl div {
+  display: grid;
+  grid-template-columns: 66px 1fr;
+  gap: 8px;
+}
+
+.point-access-details dt {
+  color: #8b8184;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.point-access-details dd {
+  margin: 0;
+  color: #5e5658;
+  font-size: 0.71rem;
+  line-height: 1.45;
+}
+
+.point-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.point-contact-links a,
+.point-source-link {
+  color: var(--wine);
+  font-size: 0.68rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.point-contact-links a {
+  padding: 6px 8px;
+  background: white;
+  border: 1px solid #ddcfd3;
+  border-radius: 6px;
+}
+
+.point-source-link {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.point-access-details > small {
+  display: block;
+  margin-top: 7px;
+  color: #8b7f82;
+  font-size: 0.61rem;
+  line-height: 1.4;
 }
 
 .approximate-note {

@@ -9,7 +9,17 @@ const regions = [
   'Valles Centrales',
 ]
 
-export default function Filters({ region, onRegionChange, sort, onSortChange, hasLocation }) {
+export default function Filters({
+  region,
+  onRegionChange,
+  sector,
+  onSectorChange,
+  access,
+  onAccessChange,
+  sort,
+  onSortChange,
+  hasLocation,
+}) {
   return (
     <div className="filters" aria-label="Filtros de puntos">
       <label>
@@ -20,6 +30,23 @@ export default function Filters({ region, onRegionChange, sort, onSortChange, ha
               {item}
             </option>
           ))}
+        </select>
+      </label>
+      <label>
+        <span>Sector</span>
+        <select value={sector} onChange={(event) => onSectorChange(event.target.value)}>
+          <option value="Todos">Todos</option>
+          <option value="publico">Público</option>
+          <option value="comunitario">Comunitario</option>
+          <option value="sin_clasificar">Sin clasificar</option>
+        </select>
+      </label>
+      <label>
+        <span>Acceso</span>
+        <select value={access} onChange={(event) => onAccessChange(event.target.value)}>
+          <option value="Todos">Todos</option>
+          <option value="gratuito">Gratuito verificado</option>
+          <option value="con_requisitos">Con requisitos documentales</option>
         </select>
       </label>
       <label>

@@ -11,6 +11,8 @@ export default function PuntoCard({ point, selected, nearest, onSelect }) {
           <div className="badges">
             {nearest && <span className="badge nearest-badge">Más cercano</span>}
             {point.tipo === 'movil' && <span className="badge mobile-badge">Servicio móvil</span>}
+            {point.sectorLabel && <span className={`badge sector-badge is-${point.sector}`}>{point.sectorLabel}</span>}
+            {point.costo === 'gratuito' && <span className="badge free-badge">Gratuito</span>}
           </div>
           <h3>{point.nombre}</h3>
           {point.institucion && <p className="institution">{point.institucion}</p>}
@@ -38,6 +40,30 @@ export default function PuntoCard({ point, selected, nearest, onSelect }) {
           </div>
         )}
       </dl>
+
+      {(point.pruebas || point.servicios || point.requisitos || point.telefono || point.fuenteOperativa) && (
+        <details className="point-access-details">
+          <summary>Servicios y condiciones de acceso</summary>
+          <dl>
+            {point.pruebas && <div><dt>Pruebas</dt><dd>{point.pruebas.join(', ')}</dd></div>}
+            {point.servicios && <div><dt>Servicios</dt><dd>{point.servicios.join('. ')}.</dd></div>}
+            {point.costoLabel && <div><dt>Costo</dt><dd>{point.costoLabel}</dd></div>}
+            {point.requisitos && <div><dt>Requisitos</dt><dd>{point.requisitos}</dd></div>}
+          </dl>
+          {(point.telefono || point.whatsapp) && (
+            <div className="point-contact-links">
+              {point.telefono && <a href={point.telefonoUrl}>Llamar: {point.telefono}</a>}
+              {point.whatsapp && <a href={point.whatsappUrl} target="_blank" rel="noreferrer">WhatsApp: {point.whatsapp}</a>}
+            </div>
+          )}
+          {point.fuenteOperativa && (
+            <a className="point-source-link" href={point.fuenteOperativa} target="_blank" rel="noreferrer">
+              Consultar fuente oficial <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {point.fechaVerificacion && <small>Información revisada: {point.fechaVerificacion}. Confirma antes de acudir.</small>}
+        </details>
+      )}
 
       {point.coordenadaAproximada && (
         <p className="approximate-note">Ubicación aproximada. Confirma la dirección antes de acudir.</p>
