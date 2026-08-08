@@ -1,6 +1,6 @@
-# Puntos de Detección Oaxaca
+# PuntOax
 
-Aplicación web de una sola página para consultar puntos de detección en el estado de Oaxaca. Permite explorar los centros en un mapa de OpenStreetMap, buscar por texto y región, consultar sus datos y calcular cuál punto fijo se encuentra más cerca del usuario.
+Aplicación web para conocer y consultar puntos de detección en el estado de Oaxaca. La portada presenta el propósito del proyecto y conduce a un directorio donde es posible explorar los centros en un mapa de OpenStreetMap, buscar por texto y región, consultar sus datos y calcular cuál punto fijo se encuentra más cerca del usuario.
 
 Los puntos se almacenan en Supabase/PostgreSQL y se consultan mediante su Data API. La vista pública es de libre acceso y las modificaciones están protegidas con Supabase Auth y políticas RLS basadas en una lista privada de administradores.
 
@@ -44,6 +44,7 @@ npm run preview
 
 ## Funcionalidades
 
+- Portada informativa con una introducción al proyecto y acceso directo al directorio.
 - Mapa interactivo con los 19 puntos disponibles.
 - Buscador sin distinción entre mayúsculas, minúsculas o acentos.
 - Filtros por región y orden alfabético o por distancia.
@@ -78,6 +79,7 @@ src/
     supabase.js
   pages/
     AdminPage.jsx
+    WelcomePage.jsx
   utils/
     distance.js
   App.jsx
@@ -90,7 +92,7 @@ supabase/
     002_seed_puntos.sql
 ```
 
-`App.jsx` obtiene los registros públicos desde Supabase y mantiene el estado de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. `AdminPage.jsx` gestiona la sesión, comprueba `is_admin()` y ejecuta las operaciones CRUD, que también están protegidas en la base de datos mediante RLS.
+`WelcomePage.jsx` presenta el proyecto en la ruta `/`. `App.jsx` muestra el directorio en `/mapa`, obtiene los registros públicos desde Supabase y mantiene el estado de filtros, selección y ubicación. `MapView.jsx` concentra la integración con Leaflet. `AdminPage.jsx` gestiona la sesión en `/admin`, comprueba `is_admin()` y ejecuta las operaciones CRUD, que también están protegidas en la base de datos mediante RLS.
 
 ## Datos y coordenadas
 
@@ -152,7 +154,7 @@ El workflow `.github/workflows/deploy-pages.yml` compila y publica la aplicació
 2. Abre **Settings > Pages** y selecciona **GitHub Actions** como fuente de publicación.
 3. Sube los cambios a la rama `main` o ejecuta manualmente **Deploy to GitHub Pages** desde la pestaña **Actions**.
 
-El workflow configura la subruta del repositorio y genera el fallback necesario para que tanto la portada como `/admin` carguen correctamente en GitHub Pages.
+El workflow configura la subruta del repositorio y genera el fallback necesario para que la portada, `/mapa` y `/admin` carguen correctamente en GitHub Pages.
 
 ## Fuente cartográfica
 
