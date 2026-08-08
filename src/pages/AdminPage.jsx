@@ -4,7 +4,7 @@ import initialPoints from '../data/puntos.json'
 import { getPoints, toDatabasePoint } from '../lib/points.js'
 import { supabase } from '../lib/supabase.js'
 
-const publicPageUrl = import.meta.env.BASE_URL
+const mapPageUrl = `${import.meta.env.BASE_URL}mapa`
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -25,7 +25,7 @@ function LoginForm() {
   return (
     <main className="admin-login-page">
       <section className="admin-login-card">
-        <a href={publicPageUrl} className="admin-back-link">← Volver al mapa</a>
+        <a href={mapPageUrl} className="admin-back-link">← Volver al mapa</a>
         <p className="eyebrow admin-eyebrow">Acceso restringido</p>
         <h1>Administración de puntos</h1>
         <p>Inicia sesión con la cuenta administradora registrada en Supabase.</p>
@@ -190,7 +190,7 @@ export default function AdminPage() {
           <h1>Puntos de Detección Oaxaca</h1>
         </div>
         <nav aria-label="Acciones de administración">
-          <a href={publicPageUrl}>Ver mapa público</a>
+          <a href={mapPageUrl}>Ver mapa público</a>
           <button type="button" onClick={() => supabase.auth.signOut()}>Cerrar sesión</button>
         </nav>
       </header>
