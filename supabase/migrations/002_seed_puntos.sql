@@ -5,7 +5,7 @@ insert into public.puntos (
   restricciones, region, tipo, coordenada_aproximada
 )
 values
-  (1, 'Oaxaca de Juárez', 'Dirección de Sanidad', 'Oaxaca de Juárez', 'Mártires de Tacubaya 315, Ruta Independencia, Centro, 68000 Oaxaca de Juárez, Oaxaca.', 'L-V 09:00 - 15:00 Hrs', 17.0632871, -96.7179158, null, 'Oaxaca y zona metropolitana', 'fijo', false),
+  (1, 'Punto Fijo de Detección – Dirección de Sanidad', 'COESIDA-CAPASITS / Municipio de Oaxaca de Juárez', 'Oaxaca de Juárez', 'Mártires de Tacubaya 315, Col. Centro, C.P. 68000, Oaxaca de Juárez, Oaxaca.', 'Lunes a viernes, 09:00 - 10:30 y 11:30 - 13:00 Hrs', 17.0632871, -96.7179158, 'Presentar CURP. No requiere cita previa para pruebas rápidas.', 'Oaxaca y zona metropolitana', 'fijo', true),
   (2, 'Central de Abastos', 'CEBIVE', 'Oaxaca de Juárez', 'C. de Nuño del Mercado 601, Cosijoeza, 68090 Oaxaca de Juárez, Oaxaca.', 'L-V 08:00 - 17:00 Hrs', 17.0552934, -96.7328032, null, 'Oaxaca y zona metropolitana', 'fijo', false),
   (3, 'IMEDI', 'Instituto de Ciencias Médicas', 'Oaxaca de Juárez', 'Blvd. Eduardo Vasconcelos 517, Barrio de Jalatlaco, 68080 Oaxaca de Juárez, Oaxaca.', 'L-V 09:00 - 14:00 Hrs', 17.0651937, -96.714459, null, 'Oaxaca y zona metropolitana', 'fijo', false),
   (4, 'COESIDA Oaxaca', null, 'San Bartolo Coyotepec', 'Séptima Privada de Aldama Sur s/n, Centro, 71256 San Bartolo Coyotepec, Oaxaca.', 'L-V 08:00 - 14:00 Hrs', 16.9482801, -96.7162376, null, 'Oaxaca y zona metropolitana', 'fijo', false),

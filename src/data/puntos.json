@@ -1,17 +1,17 @@
 [
   {
     "id": 1,
-    "nombre": "Oaxaca de Juárez",
-    "institucion": "Dirección de Sanidad",
+    "nombre": "Punto Fijo de Detección – Dirección de Sanidad",
+    "institucion": "COESIDA-CAPASITS / Municipio de Oaxaca de Juárez",
     "municipio": "Oaxaca de Juárez",
-    "direccion": "Mártires de Tacubaya 315, Ruta Independencia, Centro, 68000 Oaxaca de Juárez, Oaxaca.",
-    "horario": "L-V 09:00 - 15:00 Hrs",
+    "direccion": "Mártires de Tacubaya 315, Col. Centro, C.P. 68000, Oaxaca de Juárez, Oaxaca.",
+    "horario": "Lunes a viernes, 09:00 - 10:30 y 11:30 - 13:00 Hrs",
     "lat": 17.0632871,
     "lng": -96.7179158,
-    "restricciones": "",
+    "restricciones": "Presentar CURP. No requiere cita previa para pruebas rápidas.",
     "region": "Oaxaca y zona metropolitana",
     "tipo": "fijo",
-    "coordenadaAproximada": false
+    "coordenadaAproximada": true
   },
   {
     "id": 2,

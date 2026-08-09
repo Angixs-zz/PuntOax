@@ -99,6 +99,12 @@ export default function MapView({ points, selectedId, nearestId, userLocation, o
                 {point.institucion && <strong>{point.institucion}</strong>}
                 <p>{point.direccion}</p>
                 <p>{point.horario || 'Horario no especificado'}</p>
+                {point.costoLabel && <p><strong>Costo:</strong> {point.costoLabel}</p>}
+                {point.pruebas && <p><strong>Pruebas:</strong> {point.pruebas.join(', ')}</p>}
+                {point.requisitos && <p><strong>Requisitos:</strong> {point.requisitos}</p>}
+                {point.cita && <p>{point.cita}</p>}
+                {point.confidencial && <p>Atención confidencial</p>}
+                {point.telefono && <a className="popup-contact-link" href={point.telefonoUrl}>Llamar: {point.telefono}</a>}
                 {point.coordenadaAproximada && <small>Ubicación aproximada</small>}
                 {point.distance != null && <b>{formatDistance(point.distance)}</b>}
                 <a

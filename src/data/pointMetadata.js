@@ -13,7 +13,23 @@ const publicPoint = {
 }
 
 export const pointMetadataById = {
-  1: publicPoint,
+  1: {
+    ...publicPoint,
+    nombre: 'Punto Fijo de Detección – Dirección de Sanidad',
+    institucion: 'COESIDA-CAPASITS / Municipio de Oaxaca de Juárez',
+    direccion: 'Mártires de Tacubaya 315, Col. Centro, C.P. 68000, Oaxaca de Juárez, Oaxaca.',
+    horario: 'Lunes a viernes, 09:00 - 10:30 y 11:30 - 13:00 Hrs',
+    restricciones: 'Presentar CURP. No requiere cita previa para pruebas rápidas.',
+    coordenadaAproximada: true,
+    servicios: ['Orientación y consejería asociada al servicio'],
+    requisitos: 'Presentar CURP.',
+    cita: 'Pruebas rápidas sin necesidad de cita previa.',
+    confidencial: true,
+    telefono: '951 516 8365',
+    telefonoUrl: 'tel:+529515168365',
+    telefonoInstitucional: '951 502 2200',
+    telefonoInstitucionalUrl: 'tel:+529515022200',
+  },
   3: publicPoint,
   4: publicPoint,
   5: publicPoint,

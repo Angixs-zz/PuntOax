@@ -41,7 +41,7 @@ export default function PuntoCard({ point, selected, nearest, onSelect }) {
         )}
       </dl>
 
-      {(point.pruebas || point.servicios || point.requisitos || point.telefono || point.fuenteOperativa) && (
+      {(point.pruebas || point.servicios || point.requisitos || point.cita || point.confidencial || point.telefono || point.telefonoInstitucional || point.fuenteOperativa) && (
         <details className="point-access-details">
           <summary>Servicios y condiciones de acceso</summary>
           <dl>
@@ -49,10 +49,15 @@ export default function PuntoCard({ point, selected, nearest, onSelect }) {
             {point.servicios && <div><dt>Servicios</dt><dd>{point.servicios.join('. ')}.</dd></div>}
             {point.costoLabel && <div><dt>Costo</dt><dd>{point.costoLabel}</dd></div>}
             {point.requisitos && <div><dt>Requisitos</dt><dd>{point.requisitos}</dd></div>}
+            {point.cita && <div><dt>Cita</dt><dd>{point.cita}</dd></div>}
+            {point.confidencial && <div><dt>Privacidad</dt><dd>Atención confidencial</dd></div>}
           </dl>
-          {(point.telefono || point.whatsapp) && (
+          {(point.telefono || point.telefonoInstitucional || point.whatsapp) && (
             <div className="point-contact-links">
               {point.telefono && <a href={point.telefonoUrl}>Llamar: {point.telefono}</a>}
+              {point.telefonoInstitucional && (
+                <a href={point.telefonoInstitucionalUrl}>COESIDA: {point.telefonoInstitucional}</a>
+              )}
               {point.whatsapp && <a href={point.whatsappUrl} target="_blank" rel="noreferrer">WhatsApp: {point.whatsapp}</a>}
             </div>
           )}
